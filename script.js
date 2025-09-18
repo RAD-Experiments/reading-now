@@ -98,14 +98,30 @@ function bucketForStatus(status) {
   return null;
 }
 
-function createBookCard({ title, author, genre }) {
+function createBookCard({ title, author, genre, coverUrl }) {
   const item = document.createElement("li");
   item.className = "book-card";
+
+  if (coverUrl) {
+    const coverContainer = document.createElement("div");
+    coverContainer.className = "book-cover";
+
+    const image = document.createElement("img");
+    image.src = coverUrl;
+    image.alt = title ? `Okładka książki ${title}` : "Okładka książki";
+    image.loading = "lazy";
+
+    coverContainer.appendChild(image);
+    item.appendChild(coverContainer);
+  }
+
+  const infoContainer = document.createElement("div");
+  infoContainer.className = "book-info";
 
   const titleElement = document.createElement("h3");
   titleElement.className = "book-title";
   titleElement.textContent = title || "(bez tytułu)";
-  item.appendChild(titleElement);
+  infoContainer.appendChild(titleElement);
 
   const metaElement = document.createElement("p");
   metaElement.className = "book-meta";
@@ -123,8 +139,10 @@ function createBookCard({ title, author, genre }) {
   }
 
   if (metaElement.childElementCount > 0) {
-    item.appendChild(metaElement);
+    infoContainer.appendChild(metaElement);
   }
+
+  item.appendChild(infoContainer);
 
   return item;
 }
@@ -167,13 +185,14 @@ async function loadBooks() {
       const author = row[3] ? row[3].trim() : "";
       const genre = row[4] ? row[4].trim() : "";
       const status = row[5] ? row[5].trim() : "";
+      const coverUrl = row[9] ? row[9].trim() : "";
 
       const bucket = bucketForStatus(status);
       if (!bucket || !lists[bucket]) {
         return;
       }
 
-      const card = createBookCard({ title, author, genre });
+      const card = createBookCard({ title, author, genre, coverUrl });
       lists[bucket].appendChild(card);
       itemsLoaded += 1;
     });
