@@ -112,12 +112,14 @@ function createBookCard({ title, author, genre }) {
 
   if (author) {
     const authorSpan = document.createElement("span");
+    authorSpan.className = "book-author";
     authorSpan.textContent = author;
     metaElement.appendChild(authorSpan);
   }
 
   if (genre) {
     const genreSpan = document.createElement("span");
+    genreSpan.className = "book-genre";
     genreSpan.textContent = genre;
     metaElement.appendChild(genreSpan);
   }
