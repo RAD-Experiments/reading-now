@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Radek czyta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="logo" aria-label="Logo Radek czyta">Radek czyta</div>
+      <p class="tagline">
+        Lista książek, które właśnie pochłaniam, czekają w kolejce lub już są na
+        półce przeczytane.
+      </p>
+    </header>
+
+    <main>
+      <section class="status-message" id="status-message" role="status" aria-live="polite">
+        Ładuję dane z arkusza...
+      </section>
+
+      <section class="books-section" aria-labelledby="reading-now">
+        <h2 id="reading-now">Teraz czytam</h2>
+        <ul id="reading-list" class="book-list" aria-live="polite"></ul>
+        <p class="empty-message" data-for="reading-list" hidden>
+          Brak książek w tej sekcji.
+        </p>
+      </section>
+
+      <section class="books-section" aria-labelledby="next-up">
+        <h2 id="next-up">Następne</h2>
+        <ul id="next-list" class="book-list" aria-live="polite"></ul>
+        <p class="empty-message" data-for="next-list" hidden>
+          Brak książek w tej sekcji.
+        </p>
+      </section>
+
+      <section class="books-section" aria-labelledby="finished">
+        <h2 id="finished">Przeczytane</h2>
+        <ul id="finished-list" class="book-list" aria-live="polite"></ul>
+        <p class="empty-message" data-for="finished-list" hidden>
+          Brak książek w tej sekcji.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      Aktualizowane automatycznie z Google Sheets.
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
