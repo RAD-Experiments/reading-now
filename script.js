@@ -98,14 +98,34 @@ function bucketForStatus(status) {
   return null;
 }
 
-function createBookCard({ title, author, genre }) {
+function createBookCard({ title, author, genre, coverUrl }) {
   const item = document.createElement("li");
   item.className = "book-card";
+
+  if (coverUrl) {
+    const coverWrapper = document.createElement("div");
+    coverWrapper.className = "book-cover-wrapper";
+
+    const coverImage = document.createElement("img");
+    coverImage.className = "book-cover";
+    coverImage.src = coverUrl;
+    coverImage.alt = title
+      ? `Okładka książki \"${title}\"`
+      : "Okładka książki";
+    coverImage.loading = "lazy";
+    coverImage.decoding = "async";
+
+    coverWrapper.appendChild(coverImage);
+    item.appendChild(coverWrapper);
+  }
+
+  const detailsElement = document.createElement("div");
+  detailsElement.className = "book-details";
 
   const titleElement = document.createElement("h3");
   titleElement.className = "book-title";
   titleElement.textContent = title || "(bez tytułu)";
-  item.appendChild(titleElement);
+  detailsElement.appendChild(titleElement);
 
   const metaElement = document.createElement("p");
   metaElement.className = "book-meta";
@@ -123,8 +143,10 @@ function createBookCard({ title, author, genre }) {
   }
 
   if (metaElement.childElementCount > 0) {
-    item.appendChild(metaElement);
+    detailsElement.appendChild(metaElement);
   }
+
+  item.appendChild(detailsElement);
 
   return item;
 }
@@ -167,13 +189,14 @@ async function loadBooks() {
       const author = row[3] ? row[3].trim() : "";
       const genre = row[4] ? row[4].trim() : "";
       const status = row[5] ? row[5].trim() : "";
+      const coverUrl = row[9] ? row[9].trim() : "";
 
       const bucket = bucketForStatus(status);
       if (!bucket || !lists[bucket]) {
         return;
       }
 
-      const card = createBookCard({ title, author, genre });
+      const card = createBookCard({ title, author, genre, coverUrl });
       lists[bucket].appendChild(card);
       itemsLoaded += 1;
     });
