@@ -153,9 +153,9 @@ main {
 .book-meta {
   margin: 0;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
   font-size: 0.95rem;
   color: var(--muted-color);
 }
@@ -176,7 +176,6 @@ main {
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1.2;
-  box-shadow: 0 6px 14px rgba(81, 69, 205, 0.18);
 }
 
 .book-rating {
