@@ -98,7 +98,48 @@ function bucketForStatus(status) {
   return null;
 }
 
-function createBookCard({ title, author, genre }) {
+function createRatingElement(ratingValue) {
+  if (ratingValue === undefined || ratingValue === null) {
+    return null;
+  }
+
+  const numericRating = Number.parseFloat(ratingValue);
+  if (!Number.isFinite(numericRating)) {
+    return null;
+  }
+
+  const normalizedRating = Math.max(
+    0,
+    Math.min(5, Math.round(numericRating))
+  );
+
+  if (normalizedRating === 0) {
+    return null;
+  }
+
+  const ratingElement = document.createElement("div");
+  ratingElement.className = "book-rating";
+  ratingElement.setAttribute("role", "img");
+  ratingElement.setAttribute(
+    "aria-label",
+    `Ocena: ${normalizedRating} na 5`
+  );
+
+  for (let i = 1; i <= 5; i += 1) {
+    const star = document.createElement("span");
+    star.className = "rating-star";
+    star.textContent = i <= normalizedRating ? "★" : "☆";
+    star.setAttribute("aria-hidden", "true");
+    if (i <= normalizedRating) {
+      star.classList.add("is-filled");
+    }
+    ratingElement.appendChild(star);
+  }
+
+  return ratingElement;
+}
+
+function createBookCard({ title, author, genre, rating }) {
   const item = document.createElement("li");
   item.className = "book-card";
 
@@ -124,6 +165,11 @@ function createBookCard({ title, author, genre }) {
 
   if (metaElement.childElementCount > 0) {
     item.appendChild(metaElement);
+  }
+
+  const ratingElement = createRatingElement(rating);
+  if (ratingElement) {
+    item.appendChild(ratingElement);
   }
 
   return item;
@@ -167,13 +213,14 @@ async function loadBooks() {
       const author = row[3] ? row[3].trim() : "";
       const genre = row[4] ? row[4].trim() : "";
       const status = row[5] ? row[5].trim() : "";
+      const rating = row[8] ? row[8].trim() : "";
 
       const bucket = bucketForStatus(status);
       if (!bucket || !lists[bucket]) {
         return;
       }
 
-      const card = createBookCard({ title, author, genre });
+      const card = createBookCard({ title, author, genre, rating });
       lists[bucket].appendChild(card);
       itemsLoaded += 1;
     });
