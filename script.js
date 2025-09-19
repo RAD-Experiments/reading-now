@@ -69,7 +69,7 @@ function parseCSV(text) {
   return rows;
 }
 
-function normalizeStatus(value) {
+function normalizeText(value) {
   if (!value) {
     return "";
   }
@@ -79,6 +79,10 @@ function normalizeStatus(value) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function normalizeStatus(value) {
+  return normalizeText(value);
 }
 
 function bucketForStatus(status) {
@@ -139,14 +143,61 @@ function createRatingElement(ratingValue) {
   return ratingElement;
 }
 
-function createBookCard({ title, author, genre, rating }) {
+function findColumnIndex(headers, hints, fallbackIndex) {
+  const normalizedHeaders = headers.map((header) => normalizeText(header));
+  for (let i = 0; i < normalizedHeaders.length; i += 1) {
+    const header = normalizedHeaders[i];
+    if (!header) {
+      continue;
+    }
+    if (hints.some((hint) => header.includes(hint))) {
+      return i;
+    }
+  }
+  return fallbackIndex;
+}
+
+function getCellValue(row, index) {
+  if (!row || index === undefined || index === null || index < 0) {
+    return "";
+  }
+  const value = row[index];
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  if (value === undefined || value === null) {
+    return "";
+  }
+  return value.toString().trim();
+}
+
+function createBookCard({ title, author, genre, rating, coverUrl }) {
   const item = document.createElement("li");
   item.className = "book-card";
+
+  const bodyElement = document.createElement("div");
+  bodyElement.className = "book-card-body";
+
+  if (coverUrl) {
+    const coverWrapper = document.createElement("div");
+    coverWrapper.className = "book-cover";
+
+    const coverImage = document.createElement("img");
+    coverImage.src = coverUrl;
+    coverImage.alt = title ? `Okładka: ${title}` : "Okładka książki";
+    coverImage.loading = "lazy";
+
+    coverWrapper.appendChild(coverImage);
+    bodyElement.appendChild(coverWrapper);
+  }
+
+  const contentElement = document.createElement("div");
+  contentElement.className = "book-card-content";
 
   const titleElement = document.createElement("h3");
   titleElement.className = "book-title";
   titleElement.textContent = title || "(bez tytułu)";
-  item.appendChild(titleElement);
+  contentElement.appendChild(titleElement);
 
   const metaElement = document.createElement("p");
   metaElement.className = "book-meta";
@@ -164,13 +215,16 @@ function createBookCard({ title, author, genre, rating }) {
   }
 
   if (metaElement.childElementCount > 0) {
-    item.appendChild(metaElement);
+    contentElement.appendChild(metaElement);
   }
 
   const ratingElement = createRatingElement(rating);
   if (ratingElement) {
-    item.appendChild(ratingElement);
+    contentElement.appendChild(ratingElement);
   }
+
+  bodyElement.appendChild(contentElement);
+  item.appendChild(bodyElement);
 
   return item;
 }
@@ -205,22 +259,40 @@ async function loadBooks() {
     }
 
     // Zakładamy, że pierwszy wiersz to nagłówki.
+    const headerRow = rows[0] || [];
     const dataRows = rows.slice(1);
+
+    const columnIndexes = {
+      title: findColumnIndex(headerRow, ["tytul", "title"], 2),
+      author: findColumnIndex(headerRow, ["autor", "author"], 3),
+      genre: findColumnIndex(headerRow, ["gatun", "genre"], 4),
+      status: findColumnIndex(headerRow, ["status"], 5),
+      coverUrl: findColumnIndex(headerRow, ["oklad", "cover", "obraz", "image"], -1),
+      rating: findColumnIndex(headerRow, ["ocen", "rating"], -1),
+    };
+
     let itemsLoaded = 0;
 
     dataRows.forEach((row) => {
-      const title = row[2] ? row[2].trim() : "";
-      const author = row[3] ? row[3].trim() : "";
-      const genre = row[4] ? row[4].trim() : "";
-      const status = row[5] ? row[5].trim() : "";
-      const rating = row[8] ? row[8].trim() : "";
+      const title = getCellValue(row, columnIndexes.title);
+      const author = getCellValue(row, columnIndexes.author);
+      const genre = getCellValue(row, columnIndexes.genre);
+      const status = getCellValue(row, columnIndexes.status);
+      const coverUrl = getCellValue(row, columnIndexes.coverUrl);
+      const rating = getCellValue(row, columnIndexes.rating);
 
       const bucket = bucketForStatus(status);
       if (!bucket || !lists[bucket]) {
         return;
       }
 
-      const card = createBookCard({ title, author, genre, rating });
+      const card = createBookCard({
+        title,
+        author,
+        genre,
+        rating,
+        coverUrl,
+      });
       lists[bucket].appendChild(card);
       itemsLoaded += 1;
     });
