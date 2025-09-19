@@ -204,12 +204,14 @@ function createBookCard({ title, author, genre, rating, coverUrl }) {
 
   if (author) {
     const authorSpan = document.createElement("span");
+    authorSpan.className = "book-meta-author";
     authorSpan.textContent = author;
     metaElement.appendChild(authorSpan);
   }
 
   if (genre) {
     const genreSpan = document.createElement("span");
+    genreSpan.className = "book-meta-genre";
     genreSpan.textContent = genre;
     metaElement.appendChild(genreSpan);
   }
