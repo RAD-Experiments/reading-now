@@ -267,7 +267,11 @@ async function loadBooks() {
       author: findColumnIndex(headerRow, ["autor", "author"], 3),
       genre: findColumnIndex(headerRow, ["gatun", "genre"], 4),
       status: findColumnIndex(headerRow, ["status"], 5),
-      coverUrl: findColumnIndex(headerRow, ["oklad", "cover", "obraz", "image"], -1),
+      coverUrl: findColumnIndex(
+        headerRow,
+        ["oklad", "cover", "obraz", "image"],
+        9 // kolumna J w arkuszu (0-index = 9)
+      ),
       rating: findColumnIndex(headerRow, ["ocen", "rating"], -1),
     };
 
