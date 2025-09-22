@@ -174,27 +174,29 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(81, 69, 205, 0.08);
   color: var(--accent-color);
   text-decoration: none;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .book-meta-link:hover,
 .book-meta-link:focus {
-  background: rgba(81, 69, 205, 0.18);
   color: var(--accent-color);
-  transform: translateY(-1px);
 }
 
 .book-meta-link:focus {
   outline: 2px solid rgba(81, 69, 205, 0.35);
   outline-offset: 2px;
+}
+
+.book-meta-link:hover .book-meta-link-label,
+.book-meta-link:focus .book-meta-link-label {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
 }
 
 .book-meta-link-flag {

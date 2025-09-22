@@ -381,7 +381,7 @@ async function loadBooks() {
       ),
       englishLink: findColumnIndex(
         headerRow,
-        ["link ang", "angiel", "english", "en"],
+        ["link ang", "angiel", "wersja ang", "ksiazka po ang", "english", "en"],
         11
       ),
     };
