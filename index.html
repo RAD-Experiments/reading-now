@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <nav class="site-nav" aria-label="Nawigacja główna">
+      <a class="site-nav-link" href="o-mnie/">O mnie</a>
+    </nav>
     <header class="site-header">
       <div class="logo" aria-label="Logo Radek czyta">Radek czyta</div>
       <p class="tagline">
@@ -52,7 +55,14 @@
     </main>
 
     <footer class="site-footer">
-      Aktualizowane automatycznie z Google Sheets.
+      <p class="site-footer-text">Aktualizowane automatycznie z Google Sheets.</p>
+      <p
+        class="site-footer-text"
+        id="last-updated"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
     </footer>
 
     <script src="script.js" defer></script>

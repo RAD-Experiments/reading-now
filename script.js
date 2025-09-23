@@ -27,6 +27,7 @@ const emptyMessages = {
 };
 
 const statusElement = document.getElementById("status-message");
+const lastUpdatedElement = document.getElementById("last-updated");
 
 function setStatusMessage(text, type = "info") {
   if (!statusElement) {
@@ -39,6 +40,19 @@ function setStatusMessage(text, type = "info") {
   statusElement.hidden = false;
   statusElement.textContent = text;
   statusElement.classList.toggle("is-error", type === "error");
+}
+
+function setLastUpdated(text) {
+  if (!lastUpdatedElement) {
+    return;
+  }
+  if (!text) {
+    lastUpdatedElement.textContent = "";
+    lastUpdatedElement.hidden = true;
+    return;
+  }
+  lastUpdatedElement.hidden = false;
+  lastUpdatedElement.textContent = text;
 }
 
 function parseCSV(text) {
@@ -347,6 +361,7 @@ function toggleEmptyMessage(listKey) {
 async function loadBooks() {
   try {
     setStatusMessage("Ładuję dane z arkusza...");
+    setLastUpdated("");
     const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`Nie udało się pobrać danych (status ${response.status}).`);
@@ -400,17 +415,20 @@ async function loadBooks() {
 
     ["reading", "next", "finished"].forEach((key) => toggleEmptyMessage(key));
 
-    const message =
-      itemsLoaded > 0
-        ? `Zaktualizowano: ${new Date().toLocaleString("pl-PL")}.`
-        : "Brak danych do wyświetlenia.";
-    setStatusMessage(message);
+    if (itemsLoaded > 0) {
+      setStatusMessage("");
+      setLastUpdated(`Zaktualizowano: ${new Date().toLocaleString("pl-PL")}.`);
+    } else {
+      setStatusMessage("Brak danych do wyświetlenia.");
+      setLastUpdated("");
+    }
   } catch (error) {
     console.error(error);
     setStatusMessage(
       "Nie udało się pobrać danych z arkusza. Spróbuj odświeżyć stronę później.",
       "error"
     );
+    setLastUpdated("");
     ["reading", "next", "finished"].forEach((key) => toggleEmptyMessage(key));
   }
 }
