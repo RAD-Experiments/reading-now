@@ -145,15 +145,26 @@ function createRatingElement(ratingValue) {
 
 function findColumnIndex(headers, hints, fallbackIndex) {
   const normalizedHeaders = headers.map((header) => normalizeText(header));
+  const hintsArray = Array.isArray(hints) ? hints : [hints];
+  const normalizedHints = hintsArray
+    .map((hint) => normalizeText(hint))
+    .filter(Boolean);
+
   for (let i = 0; i < normalizedHeaders.length; i += 1) {
     const header = normalizedHeaders[i];
     if (!header) {
       continue;
     }
-    if (hints.some((hint) => header.includes(hint))) {
+
+    if (
+      normalizedHints.some((hint) =>
+        hint.length <= 3 ? header === hint : header.includes(hint)
+      )
+    ) {
       return i;
     }
   }
+
   return fallbackIndex;
 }
 
@@ -368,10 +379,18 @@ async function loadBooks() {
         [
           "link (pl",
           "link pl",
-          "wersja pl",
+          "link w pl",
+          "link do pl",
+          "link polski",
           "polski link",
           "polish link",
+          "wersja pl",
           "wersja pol",
+          "wersja polska",
+          "polska wersja",
+          "wersja w pl",
+          "ksiazka po polsku",
+          "polish version",
         ],
         10
       ),
@@ -380,13 +399,23 @@ async function loadBooks() {
         [
           "link (en",
           "link (ang",
+          "link en",
+          "link w en",
+          "link do en",
           "link angiel",
           "wersja ang",
           "wersja angiel",
-          "english",
           "wersja en",
-          "angielski",
+          "wersja w en",
           "ang.",
+          "angielski",
+          "angielski link",
+          "angielska wersja",
+          "ksiazka po ang",
+          "ksiazka po angielsku",
+          "english link",
+          "english",
+          "english version",
         ],
         11
       ),
