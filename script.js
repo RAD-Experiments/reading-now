@@ -389,6 +389,7 @@ async function loadBooks() {
         polishLink,
         englishLink,
       });
+      card.classList.add(`book-card--${bucket}`);
       lists[bucket].appendChild(card);
       itemsLoaded += 1;
     });
