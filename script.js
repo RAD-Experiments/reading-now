@@ -256,17 +256,19 @@ function getCellValue(row, index) {
   return value.toString().trim();
 }
 
-function createBookCard({
-  title,
-  author,
-  genre,
-  rating,
-  coverUrl,
-  polishLink,
-  englishLink,
-}) {
+function createBookCard(
+  { title, author, genre, rating, coverUrl, polishLink, englishLink },
+  { variant } = {}
+) {
   const item = document.createElement("li");
   item.className = "book-card";
+
+  if (typeof variant === "string") {
+    const trimmedVariant = variant.trim();
+    if (trimmedVariant) {
+      item.classList.add(`book-card--${trimmedVariant}`);
+    }
+  }
 
   const bodyElement = document.createElement("div");
   bodyElement.className = "book-card-body";
@@ -380,15 +382,18 @@ async function loadBooks() {
         return;
       }
 
-      const card = createBookCard({
-        title,
-        author,
-        genre,
-        rating,
-        coverUrl,
-        polishLink,
-        englishLink,
-      });
+      const card = createBookCard(
+        {
+          title,
+          author,
+          genre,
+          rating,
+          coverUrl,
+          polishLink,
+          englishLink,
+        },
+        { variant: bucket }
+      );
       lists[bucket].appendChild(card);
       itemsLoaded += 1;
     });
