@@ -171,7 +171,86 @@ function getCellValue(row, index) {
   return value.toString().trim();
 }
 
-function createBookCard({ title, author, genre, rating, coverUrl }) {
+function normalizeLink(value) {
+  if (!value) {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  if (!/^https?:\/\//i.test(trimmed)) {
+    return null;
+  }
+  return trimmed;
+}
+
+function createLinksElement({ polishLink, englishLink, title }) {
+  const links = [];
+
+  const normalizedPolish = normalizeLink(polishLink);
+  if (normalizedPolish) {
+    links.push({
+      href: normalizedPolish,
+      text: "Wersja PL",
+    });
+  }
+
+  const normalizedEnglish = normalizeLink(englishLink);
+  if (normalizedEnglish) {
+    links.push({
+      href: normalizedEnglish,
+      text: "Wersja EN",
+    });
+  }
+
+  if (links.length === 0) {
+    return null;
+  }
+
+  const uniqueLinks = [];
+  const seen = new Set();
+  links.forEach((link) => {
+    if (seen.has(link.href)) {
+      return;
+    }
+    seen.add(link.href);
+    uniqueLinks.push(link);
+  });
+
+  if (uniqueLinks.length === 0) {
+    return null;
+  }
+
+  const container = document.createElement("div");
+  container.className = "book-links";
+
+  uniqueLinks.forEach(({ href, text }) => {
+    const link = document.createElement("a");
+    link.className = "book-link";
+    link.href = href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = text;
+    link.setAttribute(
+      "aria-label",
+      title ? `${text}: ${title}` : text
+    );
+    container.appendChild(link);
+  });
+
+  return container;
+}
+
+function createBookCard({
+  title,
+  author,
+  genre,
+  rating,
+  coverUrl,
+  polishLink,
+  englishLink,
+}) {
   const item = document.createElement("li");
   item.className = "book-card";
 
@@ -225,6 +304,15 @@ function createBookCard({ title, author, genre, rating, coverUrl }) {
     contentElement.appendChild(ratingElement);
   }
 
+  const linksElement = createLinksElement({
+    polishLink,
+    englishLink,
+    title,
+  });
+  if (linksElement) {
+    contentElement.appendChild(linksElement);
+  }
+
   bodyElement.appendChild(contentElement);
   item.appendChild(bodyElement);
 
@@ -275,6 +363,33 @@ async function loadBooks() {
         9 // kolumna J w arkuszu (0-index = 9)
       ),
       rating: findColumnIndex(headerRow, ["ocen", "rating"], -1),
+      polishLink: findColumnIndex(
+        headerRow,
+        [
+          "link (pl",
+          "link pl",
+          "wersja pl",
+          "polski link",
+          "polish link",
+          "wersja pol",
+        ],
+        10
+      ),
+      englishLink: findColumnIndex(
+        headerRow,
+        [
+          "link (en",
+          "link (ang",
+          "link angiel",
+          "wersja ang",
+          "wersja angiel",
+          "english",
+          "wersja en",
+          "angielski",
+          "ang.",
+        ],
+        11
+      ),
     };
 
     let itemsLoaded = 0;
@@ -286,6 +401,8 @@ async function loadBooks() {
       const status = getCellValue(row, columnIndexes.status);
       const coverUrl = getCellValue(row, columnIndexes.coverUrl);
       const rating = getCellValue(row, columnIndexes.rating);
+      const polishLink = getCellValue(row, columnIndexes.polishLink);
+      const englishLink = getCellValue(row, columnIndexes.englishLink);
 
       const bucket = bucketForStatus(status);
       if (!bucket || !lists[bucket]) {
@@ -298,6 +415,8 @@ async function loadBooks() {
         genre,
         rating,
         coverUrl,
+        polishLink,
+        englishLink,
       });
       lists[bucket].appendChild(card);
       itemsLoaded += 1;

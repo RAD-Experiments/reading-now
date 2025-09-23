@@ -198,6 +198,40 @@ main {
   filter: drop-shadow(0 3px 10px rgba(81, 69, 205, 0.25));
 }
 
+.book-links {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.book-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(81, 69, 205, 0.12);
+  color: var(--accent-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-link:hover,
+.book-link:focus {
+  background: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(81, 69, 205, 0.2);
+}
+
+.book-link:focus-visible {
+  outline: 2px solid rgba(81, 69, 205, 0.35);
+  outline-offset: 2px;
+}
+
 .empty-message {
   margin-top: 0.5rem;
   font-size: 0.95rem;
