@@ -143,20 +143,6 @@ function createRatingElement(ratingValue) {
   return ratingElement;
 }
 
-function findColumnIndex(headers, hints, fallbackIndex) {
-  const normalizedHeaders = headers.map((header) => normalizeText(header));
-  for (let i = 0; i < normalizedHeaders.length; i += 1) {
-    const header = normalizedHeaders[i];
-    if (!header) {
-      continue;
-    }
-    if (hints.some((hint) => header.includes(hint))) {
-      return i;
-    }
-  }
-  return fallbackIndex;
-}
-
 function getCellValue(row, index) {
   if (!row || index === undefined || index === null || index < 0) {
     return "";
@@ -265,16 +251,14 @@ async function loadBooks() {
     const dataRows = rows.slice(1);
 
     const columnIndexes = {
-      title: findColumnIndex(headerRow, ["tytul", "title"], 2),
-      author: findColumnIndex(headerRow, ["autor", "author"], 3),
-      genre: findColumnIndex(headerRow, ["gatun", "genre"], 4),
-      status: findColumnIndex(headerRow, ["status"], 5),
-      coverUrl: findColumnIndex(
-        headerRow,
-        ["oklad", "cover", "obraz", "image"],
-        9 // kolumna J w arkuszu (0-index = 9)
-      ),
-      rating: findColumnIndex(headerRow, ["ocen", "rating"], -1),
+      title: 2,
+      author: 3,
+      genre: 4,
+      status: 5,
+      coverUrl: 9, // kolumna J w arkuszu (0-index = 9)
+      polishLink: 10,
+      englishLink: 11,
+      rating: -1,
     };
 
     let itemsLoaded = 0;
