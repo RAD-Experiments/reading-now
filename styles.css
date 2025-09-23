@@ -111,9 +111,6 @@ main {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   flex: 1 1 min(320px, 100%);
   min-width: min(260px, 100%);
-}
-
-.books-section .book-card {
   display: flex;
   flex-direction: column;
   height: 100%;
