@@ -96,6 +96,7 @@ main {
   padding: 0;
   display: grid;
   gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .book-card {
