@@ -1,6 +1,19 @@
 const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQjjjgtBTUiSTuLiJQ_rP4m7uYffLK_uvkF2Dt1_NildFjEHUcilVUysEQRBH-iWJC1dA-Rtpx8tVn8/pub?gid=2028690260&single=true&output=csv";
 
+const SHEET_COLUMN_INDEXES = Object.freeze({
+  title: 2, // kolumna C
+  author: 3, // kolumna D
+  genre: 4, // kolumna E
+  status: 5, // kolumna F
+  format: 6, // kolumna G
+  language: 7, // kolumna H
+  rating: 8, // kolumna I
+  coverUrl: 9, // kolumna J
+  polishLink: 10, // kolumna K
+  englishLink: 11, // kolumna L
+});
+
 const lists = {
   reading: document.getElementById("reading-list"),
   next: document.getElementById("next-list"),
@@ -229,20 +242,6 @@ function createBookLinks(polishLink, englishLink) {
   return container;
 }
 
-function findColumnIndex(headers, hints, fallbackIndex) {
-  const normalizedHeaders = headers.map((header) => normalizeText(header));
-  for (let i = 0; i < normalizedHeaders.length; i += 1) {
-    const header = normalizedHeaders[i];
-    if (!header) {
-      continue;
-    }
-    if (hints.some((hint) => header.includes(hint))) {
-      return i;
-    }
-  }
-  return fallbackIndex;
-}
-
 function getCellValue(row, index) {
   if (!row || index === undefined || index === null || index < 0) {
     return "";
@@ -360,31 +359,9 @@ async function loadBooks() {
     }
 
     // Zakładamy, że pierwszy wiersz to nagłówki.
-    const headerRow = rows[0] || [];
     const dataRows = rows.slice(1);
 
-    const columnIndexes = {
-      title: findColumnIndex(headerRow, ["tytul", "title"], 2),
-      author: findColumnIndex(headerRow, ["autor", "author"], 3),
-      genre: findColumnIndex(headerRow, ["gatun", "genre"], 4),
-      status: findColumnIndex(headerRow, ["status"], 5),
-      coverUrl: findColumnIndex(
-        headerRow,
-        ["oklad", "cover", "obraz", "image"],
-        9 // kolumna J w arkuszu (0-index = 9)
-      ),
-      rating: findColumnIndex(headerRow, ["ocen", "rating"], -1),
-      polishLink: findColumnIndex(
-        headerRow,
-        ["link pl", "polsk", "wersja pl", "pl"],
-        10
-      ),
-      englishLink: findColumnIndex(
-        headerRow,
-        ["link ang", "angiel", "wersja ang", "ksiazka po ang", "english", "en"],
-        11
-      ),
-    };
+    const columnIndexes = SHEET_COLUMN_INDEXES;
 
     let itemsLoaded = 0;
 
