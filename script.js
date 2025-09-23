@@ -143,6 +143,92 @@ function createRatingElement(ratingValue) {
   return ratingElement;
 }
 
+function sanitizeExternalLink(value) {
+  if (!value) {
+    return null;
+  }
+
+  const trimmedValue = value.toString().trim();
+  if (!trimmedValue) {
+    return null;
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null;
+    }
+    return url.href;
+  } catch (error) {
+    return null;
+  }
+}
+
+function createBookLink(urlValue, { label, flagEmoji }) {
+  const sanitizedUrl = sanitizeExternalLink(urlValue);
+  if (!sanitizedUrl) {
+    return null;
+  }
+
+  const linkElement = document.createElement("a");
+  linkElement.className = "book-meta-link";
+  linkElement.href = sanitizedUrl;
+  linkElement.target = "_blank";
+  linkElement.rel = "noopener noreferrer";
+  linkElement.setAttribute(
+    "aria-label",
+    `${label} (otwiera się w nowej karcie)`
+  );
+  linkElement.title = `${label} (otwiera się w nowej karcie)`;
+
+  if (flagEmoji) {
+    const flagSpan = document.createElement("span");
+    flagSpan.className = "book-meta-link-flag";
+    flagSpan.textContent = flagEmoji;
+    flagSpan.setAttribute("aria-hidden", "true");
+    linkElement.appendChild(flagSpan);
+  }
+
+  const labelSpan = document.createElement("span");
+  labelSpan.className = "book-meta-link-label";
+  labelSpan.textContent = label;
+  linkElement.appendChild(labelSpan);
+
+  return linkElement;
+}
+
+function createBookLinks(polishLink, englishLink) {
+  const links = [];
+
+  const polishLinkElement = createBookLink(polishLink, {
+    label: "Książka po polsku",
+    flagEmoji: "🇵🇱",
+  });
+  if (polishLinkElement) {
+    links.push(polishLinkElement);
+  }
+
+  const englishLinkElement = createBookLink(englishLink, {
+    label: "Książka po angielsku",
+    flagEmoji: "🇬🇧",
+  });
+  if (englishLinkElement) {
+    links.push(englishLinkElement);
+  }
+
+  if (links.length === 0) {
+    return null;
+  }
+
+  const container = document.createElement("span");
+  container.className = "book-meta-links";
+  links.forEach((linkElement) => {
+    container.appendChild(linkElement);
+  });
+
+  return container;
+}
+
 function findColumnIndex(headers, hints, fallbackIndex) {
   const normalizedHeaders = headers.map((header) => normalizeText(header));
   for (let i = 0; i < normalizedHeaders.length; i += 1) {
@@ -171,7 +257,15 @@ function getCellValue(row, index) {
   return value.toString().trim();
 }
 
-function createBookCard({ title, author, genre, rating, coverUrl }) {
+function createBookCard({
+  title,
+  author,
+  genre,
+  rating,
+  coverUrl,
+  polishLink,
+  englishLink,
+}) {
   const item = document.createElement("li");
   item.className = "book-card";
 
@@ -207,6 +301,11 @@ function createBookCard({ title, author, genre, rating, coverUrl }) {
     authorSpan.className = "book-meta-author";
     authorSpan.textContent = author;
     metaElement.appendChild(authorSpan);
+  }
+
+  const linksElement = createBookLinks(polishLink, englishLink);
+  if (linksElement) {
+    metaElement.appendChild(linksElement);
   }
 
   if (genre) {
@@ -275,6 +374,16 @@ async function loadBooks() {
         9 // kolumna J w arkuszu (0-index = 9)
       ),
       rating: findColumnIndex(headerRow, ["ocen", "rating"], -1),
+      polishLink: findColumnIndex(
+        headerRow,
+        ["link pl", "polsk", "wersja pl", "pl"],
+        10
+      ),
+      englishLink: findColumnIndex(
+        headerRow,
+        ["link ang", "angiel", "wersja ang", "ksiazka po ang", "english", "en"],
+        11
+      ),
     };
 
     let itemsLoaded = 0;
@@ -286,6 +395,8 @@ async function loadBooks() {
       const status = getCellValue(row, columnIndexes.status);
       const coverUrl = getCellValue(row, columnIndexes.coverUrl);
       const rating = getCellValue(row, columnIndexes.rating);
+      const polishLink = getCellValue(row, columnIndexes.polishLink);
+      const englishLink = getCellValue(row, columnIndexes.englishLink);
 
       const bucket = bucketForStatus(status);
       if (!bucket || !lists[bucket]) {
@@ -298,6 +409,8 @@ async function loadBooks() {
         genre,
         rating,
         coverUrl,
+        polishLink,
+        englishLink,
       });
       lists[bucket].appendChild(card);
       itemsLoaded += 1;

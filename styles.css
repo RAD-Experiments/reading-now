@@ -164,6 +164,50 @@ main {
   color: inherit;
 }
 
+.book-meta-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.book-meta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+}
+
+.book-meta-link:hover,
+.book-meta-link:focus {
+  color: var(--accent-color);
+}
+
+.book-meta-link:focus {
+  outline: 2px solid rgba(81, 69, 205, 0.35);
+  outline-offset: 2px;
+}
+
+.book-meta-link:hover .book-meta-link-label,
+.book-meta-link:focus .book-meta-link-label {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+}
+
+.book-meta-link-flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.book-meta-link-label {
+  line-height: 1;
+}
+
 .book-meta-genre {
   display: inline-flex;
   align-items: center;
