@@ -30,6 +30,43 @@ body {
   padding: clamp(1.5rem, 3vw, 3rem) 1.5rem 2.5rem;
 }
 
+.site-nav {
+  align-self: stretch;
+  width: min(960px, 100%);
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.site-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(81, 69, 205, 0.18);
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow: 0 10px 20px rgba(81, 69, 205, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.site-nav-link:hover,
+.site-nav-link:focus {
+  background: rgba(81, 69, 205, 0.12);
+  box-shadow: 0 12px 28px rgba(81, 69, 205, 0.18);
+  transform: translateY(-1px);
+}
+
+.site-nav-link:focus {
+  outline: 2px solid rgba(81, 69, 205, 0.35);
+  outline-offset: 2px;
+}
+
 .site-header {
   text-align: center;
   max-width: 720px;
@@ -80,6 +117,41 @@ main {
   padding: clamp(1.6rem, 3vw, 2rem);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(6px);
+}
+
+.about-section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.about-section h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.3rem);
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.about-section p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-color);
+}
+
+.about-section a {
+  color: var(--accent-color);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid rgba(81, 69, 205, 0.25);
+  padding-bottom: 0.05em;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.about-section a:hover,
+.about-section a:focus {
+  color: var(--accent-color);
+  border-color: rgba(81, 69, 205, 0.55);
 }
 
 .books-section h2 {
@@ -322,11 +394,29 @@ main {
   font-size: 0.85rem;
   color: rgba(45, 42, 68, 0.6);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.site-footer-text {
+  margin: 0;
+  color: inherit;
 }
 
 @media (max-width: 700px) {
   body {
     padding: 1.5rem 1.2rem 2.5rem;
+  }
+
+  .site-nav {
+    justify-content: center;
+  }
+
+  .site-nav-link {
+    width: min(200px, 100%);
+    justify-content: center;
   }
 
   .books-section {
