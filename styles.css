@@ -279,7 +279,7 @@ main {
 
 .book-card--reading .book-meta-genre {
   margin-top: auto;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .book-rating {
