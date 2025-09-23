@@ -109,8 +109,10 @@ main {
   border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  flex: 1 1 min(320px, 100%);
-  min-width: min(260px, 100%);
+}
+
+.book-card--reading {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -120,14 +122,10 @@ main {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+}
+
+.book-card--reading .book-card-body {
   flex: 1;
-}
-
-#reading-list .book-card {
-  padding: 1.5rem;
-}
-
-#reading-list .book-card-body {
   flex-direction: column;
   align-items: center;
   text-align: center;
@@ -144,7 +142,7 @@ main {
   box-shadow: 0 10px 20px rgba(81, 69, 205, 0.15);
 }
 
-#reading-list .book-cover {
+.book-card--reading .book-cover {
   width: clamp(140px, 45vw, 180px);
   box-shadow: 0 16px 32px rgba(81, 69, 205, 0.2);
 }
@@ -156,6 +154,7 @@ main {
   display: block;
 }
 
+
 .book-card-content {
   flex: 1;
   min-width: 0;
@@ -163,14 +162,14 @@ main {
   flex-direction: column;
 }
 
-#reading-list .book-card-content {
+.book-card--reading .book-card-content {
   align-items: stretch;
   gap: 0.35rem;
   text-align: left;
   width: 100%;
 }
 
-#reading-list .book-title {
+.book-card--reading .book-title {
   margin-bottom: 0;
   text-align: center;
 }
@@ -188,6 +187,7 @@ main {
   color: var(--text-color);
 }
 
+
 .book-meta {
   margin: 0;
   display: flex;
@@ -198,10 +198,8 @@ main {
   color: var(--muted-color);
 }
 
-#reading-list .book-meta {
-  align-items: flex-start;
+.book-card--reading .book-meta {
   text-align: left;
-  gap: 0.35rem;
   flex: 1;
   width: 100%;
 }
@@ -216,7 +214,7 @@ main {
   gap: 0.45rem;
 }
 
-#reading-list .book-meta-links {
+.book-card--reading .book-meta-links {
   justify-content: flex-start;
 }
 
@@ -272,7 +270,7 @@ main {
   line-height: 1.2;
 }
 
-#reading-list .book-meta-genre {
+.book-card--reading .book-meta-genre {
   margin-top: auto;
   align-self: flex-start;
 }
@@ -286,7 +284,7 @@ main {
   color: var(--star-outline);
 }
 
-#reading-list .book-rating {
+.book-card--reading .book-rating {
   justify-content: center;
 }
 
