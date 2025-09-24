@@ -68,6 +68,56 @@ main {
   border-color: rgba(244, 143, 177, 0.5);
 }
 
+.update-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: rgba(81, 69, 205, 0.08);
+  border: 1px solid rgba(81, 69, 205, 0.25);
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  color: var(--accent-color);
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.update-notice[hidden] {
+  display: none;
+}
+
+.refresh-button {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent-color);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.45rem 1.3rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 8px 18px rgba(81, 69, 205, 0.2);
+}
+
+.refresh-button:hover,
+.refresh-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(81, 69, 205, 0.25);
+}
+
+.refresh-button:focus-visible {
+  outline: 2px solid rgba(81, 69, 205, 0.4);
+  outline-offset: 2px;
+}
+
+.refresh-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: 0 4px 12px rgba(81, 69, 205, 0.15);
+}
+
 .books-section {
   background: var(--card-bg);
   border: 1px solid var(--card-border);

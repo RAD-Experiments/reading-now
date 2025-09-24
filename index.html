@@ -26,6 +26,19 @@
         Ładuję dane z arkusza...
       </section>
 
+      <div
+        class="update-notice"
+        id="update-notice"
+        hidden
+        role="status"
+        aria-live="polite"
+      >
+        <span id="update-text">Nowa wersja strony jest dostępna.</span>
+        <button type="button" class="refresh-button" id="refresh-button">
+          Odśwież teraz
+        </button>
+      </div>
+
       <section class="books-section" aria-labelledby="reading-now">
         <h2 id="reading-now">Teraz czytam</h2>
         <ul id="reading-list" class="book-list" aria-live="polite"></ul>
