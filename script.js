@@ -14,6 +14,20 @@ const emptyMessages = {
 };
 
 const statusElement = document.getElementById("status-message");
+const updateNotice = document.getElementById("update-notice");
+const refreshButton = document.getElementById("refresh-button");
+const updateTextElement = document.getElementById("update-text");
+const refreshButtonDefaultText = refreshButton
+  ? refreshButton.textContent.trim()
+  : "Odśwież teraz";
+const updateTextDefault = updateTextElement
+  ? updateTextElement.textContent.trim()
+  : "Nowa wersja strony jest dostępna.";
+
+let waitingServiceWorker = null;
+let shouldReloadWhenControllerChanges = false;
+
+const REFRESH_BUTTON_LOADING_TEXT = "Aktualizuję...";
 
 const QUOTE_PREFIX = "Dzisiejszy cytat — ";
 
@@ -163,13 +177,126 @@ function toggleEmptyMessage(listKey) {
   }
 }
 
-async function loadBooks() {
+function replaceListChildren(list, nodes) {
+  if (!list) {
+    return;
+  }
+
+  if (typeof list.replaceChildren === "function") {
+    list.replaceChildren(...nodes);
+    return;
+  }
+
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+  nodes.forEach((node) => list.appendChild(node));
+}
+
+function resetRefreshButtonState() {
+  if (!refreshButton) {
+    return;
+  }
+
+  refreshButton.disabled = false;
+  refreshButton.textContent = refreshButtonDefaultText;
+  refreshButton.removeAttribute("aria-busy");
+}
+
+function showUpdatePrompt(worker) {
+  if (!updateNotice || !refreshButton) {
+    return;
+  }
+
+  waitingServiceWorker = worker;
+  resetRefreshButtonState();
+  updateNotice.hidden = false;
+
+  if (updateTextElement) {
+    updateTextElement.textContent = updateTextDefault;
+  }
+}
+
+function handleRefreshButtonClick() {
+  if (!refreshButton) {
+    return;
+  }
+
+  if (!waitingServiceWorker) {
+    window.location.reload();
+    return;
+  }
+
+  refreshButton.disabled = true;
+  refreshButton.textContent = REFRESH_BUTTON_LOADING_TEXT;
+  refreshButton.setAttribute("aria-busy", "true");
+
+  if (updateTextElement) {
+    updateTextElement.textContent = "Trwa aktualizowanie strony...";
+  }
+
+  setStatusMessage("Ładuję nową wersję strony...");
+  shouldReloadWhenControllerChanges = true;
+  waitingServiceWorker.postMessage({ type: "SKIP_WAITING" });
+}
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+
+  navigator.serviceWorker
+    .register("service-worker.js")
+    .then((registration) => {
+      if (registration.waiting) {
+        showUpdatePrompt(registration.waiting);
+      }
+
+      registration.addEventListener("updatefound", () => {
+        const newWorker = registration.installing;
+        if (!newWorker) {
+          return;
+        }
+
+        newWorker.addEventListener("statechange", () => {
+          if (
+            newWorker.state === "installed" &&
+            navigator.serviceWorker.controller
+          ) {
+            showUpdatePrompt(newWorker);
+          }
+        });
+      });
+
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!shouldReloadWhenControllerChanges || refreshing) {
+          return;
+        }
+        refreshing = true;
+        waitingServiceWorker = null;
+        window.location.reload();
+      });
+    })
+    .catch((error) => {
+      console.error("Błąd podczas rejestracji Service Workera:", error);
+    });
+}
+
+async function loadBooks({ reason } = {}) {
+  const isManualRefresh = reason === "manual-refresh";
+
   try {
-    setStatusMessage("Ładuję dane z arkusza...");
+    const loadingMessage = isManualRefresh
+      ? "Sprawdzam, czy są dostępne nowsze dane..."
+      : "Ładuję dane z arkusza...";
+    setStatusMessage(loadingMessage);
+
     const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`Nie udało się pobrać danych (status ${response.status}).`);
     }
+
     const csvText = await response.text();
     const rows = parseCSV(csvText).filter((row) =>
       row.some((cell) => cell && cell.trim() !== "")
@@ -179,8 +306,13 @@ async function loadBooks() {
       throw new Error("Arkusz nie zawiera żadnych danych.");
     }
 
-    // Zakładamy, że pierwszy wiersz to nagłówki.
     const dataRows = rows.slice(1);
+    const listKeys = Object.keys(lists);
+    const bucketedCards = listKeys.reduce((acc, key) => {
+      acc[key] = [];
+      return acc;
+    }, {});
+
     let itemsLoaded = 0;
 
     dataRows.forEach((row) => {
@@ -190,16 +322,24 @@ async function loadBooks() {
       const status = row[5] ? row[5].trim() : "";
 
       const bucket = bucketForStatus(status);
-      if (!bucket || !lists[bucket]) {
+      if (!bucket || !bucketedCards[bucket]) {
         return;
       }
 
-      const card = createBookCard({ title, author, genre });
-      lists[bucket].appendChild(card);
+      bucketedCards[bucket].push(
+        createBookCard({
+          title,
+          author,
+          genre,
+        })
+      );
       itemsLoaded += 1;
     });
 
-    ["reading", "next", "finished"].forEach((key) => toggleEmptyMessage(key));
+    listKeys.forEach((key) => {
+      replaceListChildren(lists[key], bucketedCards[key]);
+      toggleEmptyMessage(key);
+    });
 
     const message =
       itemsLoaded > 0
@@ -212,8 +352,13 @@ async function loadBooks() {
       "Nie udało się pobrać danych z arkusza. Spróbuj odświeżyć stronę później.",
       "error"
     );
-    ["reading", "next", "finished"].forEach((key) => toggleEmptyMessage(key));
+    Object.keys(lists).forEach((key) => toggleEmptyMessage(key));
   }
 }
 
+if (refreshButton) {
+  refreshButton.addEventListener("click", handleRefreshButtonClick);
+}
+
+registerServiceWorker();
 loadBooks();
