@@ -15,6 +15,27 @@ const emptyMessages = {
 
 const statusElement = document.getElementById("status-message");
 
+const QUOTE_PREFIX = "Dzisiejszy cytat — ";
+
+function sanitizeStatusText(text) {
+  if (typeof text !== "string") {
+    return text;
+  }
+
+  const trimmed = text.trim();
+  const prefixIndex = trimmed.indexOf(QUOTE_PREFIX);
+  if (prefixIndex !== -1) {
+    const afterPrefix = trimmed.slice(prefixIndex + QUOTE_PREFIX.length).trim();
+    const dateMatch = afterPrefix.match(/\d{1,4}[./-]\d{1,2}[./-]\d{2,4}/);
+    if (dateMatch) {
+      return dateMatch[0];
+    }
+    return afterPrefix;
+  }
+
+  return trimmed;
+}
+
 function setStatusMessage(text, type = "info") {
   if (!statusElement) {
     return;
@@ -24,7 +45,7 @@ function setStatusMessage(text, type = "info") {
     return;
   }
   statusElement.hidden = false;
-  statusElement.textContent = text;
+  statusElement.textContent = sanitizeStatusText(text);
   statusElement.classList.toggle("is-error", type === "error");
 }
 
