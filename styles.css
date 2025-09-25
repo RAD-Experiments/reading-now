@@ -60,8 +60,9 @@ body {
 }
 
 .site-header {
-  align-self: stretch;
+  align-self: center;
   width: min(960px, 100%);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: clamp(0.75rem, 2vw, 1.25rem);
