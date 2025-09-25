@@ -30,14 +30,6 @@ body {
   padding: clamp(1.5rem, 3vw, 3rem) 1.5rem 2.5rem;
 }
 
-.site-nav {
-  align-self: stretch;
-  width: min(960px, 100%);
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
-}
-
 .site-nav-link {
   display: inline-flex;
   align-items: center;
@@ -68,9 +60,19 @@ body {
 }
 
 .site-header {
-  text-align: center;
-  max-width: 720px;
+  align-self: stretch;
+  width: min(960px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
   margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.site-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .logo {
@@ -82,10 +84,11 @@ body {
 }
 
 .tagline {
-  margin-top: 0.75rem;
+  margin: 0;
   font-size: 1.1rem;
   line-height: 1.6;
   color: var(--muted-color);
+  text-align: left;
 }
 
 main {
