@@ -82,6 +82,18 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--accent-color);
+  text-decoration: none;
+}
+
+.logo:hover,
+.logo:focus {
+  text-decoration: none;
+}
+
+.logo:focus {
+  outline: 2px solid rgba(81, 69, 205, 0.35);
+  outline-offset: 4px;
+  border-radius: 6px;
 }
 
 .tagline {
