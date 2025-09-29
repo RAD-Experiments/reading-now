@@ -351,6 +351,24 @@ main {
   line-height: 1;
 }
 
+.book-meta-format {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.book-meta-format-label {
+  line-height: 1;
+}
+
+.book-meta-format-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .book-meta-genre {
   display: inline-flex;
   align-items: center;
