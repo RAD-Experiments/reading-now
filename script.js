@@ -256,6 +256,51 @@ function createBookLinks(polishLink, englishLink) {
   return container;
 }
 
+function createFormatElement(formatValue) {
+  if (!formatValue) {
+    return null;
+  }
+
+  const normalized = normalizeText(formatValue);
+  if (!normalized) {
+    return null;
+  }
+
+  let emoji = "";
+  if (normalized.includes("audio")) {
+    emoji = "🎧";
+  } else if (normalized.includes("ebook") || normalized.includes("e-book")) {
+    emoji = "📱";
+  } else if (
+    normalized.includes("papier") ||
+    normalized.includes("druk") ||
+    normalized.includes("paper")
+  ) {
+    emoji = "📕";
+  }
+
+  if (!emoji) {
+    return null;
+  }
+
+  const formatSpan = document.createElement("span");
+  formatSpan.className = "book-meta-format";
+  const displayText = formatValue.trim();
+  formatSpan.setAttribute("aria-label", `Format: ${displayText}`);
+
+  const iconSpan = document.createElement("span");
+  iconSpan.className = "book-meta-format-icon";
+  iconSpan.textContent = emoji;
+
+  const labelSpan = document.createElement("span");
+  labelSpan.className = "book-meta-format-label";
+  labelSpan.textContent = displayText;
+
+  formatSpan.append(iconSpan, labelSpan);
+
+  return formatSpan;
+}
+
 function getCellValue(row, index) {
   if (!row || index === undefined || index === null || index < 0) {
     return "";
@@ -271,7 +316,7 @@ function getCellValue(row, index) {
 }
 
 function createBookCard(
-  { title, author, genre, rating, coverUrl, polishLink, englishLink },
+  { title, author, genre, rating, coverUrl, polishLink, englishLink, format },
   { variant } = {}
 ) {
   const item = document.createElement("li");
@@ -316,6 +361,11 @@ function createBookCard(
     authorSpan.className = "book-meta-author";
     authorSpan.textContent = author;
     metaElement.appendChild(authorSpan);
+  }
+
+  const formatElement = createFormatElement(format);
+  if (formatElement) {
+    metaElement.appendChild(formatElement);
   }
 
   const linksElement = createBookLinks(polishLink, englishLink);
@@ -389,6 +439,7 @@ async function loadBooks() {
       const status = getCellValue(row, columnIndexes.status);
       const coverUrl = getCellValue(row, columnIndexes.coverUrl);
       const rating = getCellValue(row, columnIndexes.rating);
+      const format = getCellValue(row, columnIndexes.format);
       const polishLink = getCellValue(row, columnIndexes.polishLink);
       const englishLink = getCellValue(row, columnIndexes.englishLink);
 
@@ -406,6 +457,7 @@ async function loadBooks() {
           coverUrl,
           polishLink,
           englishLink,
+          format,
         },
         { variant: bucket }
       );
